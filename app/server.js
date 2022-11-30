@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const http = require('http');
+const { Allroutes } = require('./router/router');
 
 module.exports = class Application {
     #app = express()
@@ -33,7 +34,7 @@ module.exports = class Application {
         })
     }
     createRoutes(){
-
+        this.#app.use(Allroutes)
     }
     errorHandling(){
         this.#app.use((req, res, next) => {
