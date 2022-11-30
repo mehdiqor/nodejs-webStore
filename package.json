@@ -1,0 +1,28 @@
+{
+  "name": "webstroe-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehdiqor/nodejs-webStore.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mehdiqor/nodejs-webStore/issues"
+  },
+  "homepage": "https://github.com/mehdiqor/nodejs-webStore#readme",
+  "dependencies": {
+    "app-module-path": "^2.2.0",
+    "auto-bind": "^4.0.0",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^6.7.4"
+  }
+}
