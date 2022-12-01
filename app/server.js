@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const path = require('path');
 const http = require('http');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
 const createError = require('http-errors');
 const { Allroutes } = require('./router/router');
 
@@ -24,6 +26,26 @@ module.exports = class Application {
         this.#app.use(express.json()); //json for sending data from client
         this.#app.use(express.urlencoded({extended : true})); //urlencoded for sending data with form
         this.#app.use(express.static(path.join(__dirname, "..", "public")));
+        this.#app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc({
+            swaggerDefinition : {
+                info : {
+                    title : 'my-store',
+                    version : '2.0.0',
+                    description : 'پروژه فروشگاه اینترنتی',
+                    contact : {
+                        name : 'Mehdi Ghorbani',
+                        url : 'https://github.com/mehdiqor',
+                        email : 'mehdighorbanin@gmail.com'
+                    }
+                },
+                servers : [
+                    {
+                        url : "http://localhost:5000"
+                    }
+                ]
+            },
+            apis : ['./app/router/*/*.js']
+        })))
     }
     createServer(){
         http.createServer(this.#app).listen(this.#PORT, () => {
