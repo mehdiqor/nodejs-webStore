@@ -1,14 +1,14 @@
 const createError = require('http-errors');
 const { UserModel } = require('../../../../models/users');
 const { EXPIRES_IN, USER_ROLE } = require('../../../../utils/costans');
-const { randomNumberGenerator } = require('../../../../utils/fuctions');
-const { authSchema } = require('../../../validators/user/auth.schema');
+const { randomNumberGenerator, signAccessToken } = require('../../../../utils/fuctions');
+const { getOtpSchema, checkOtpSchema } = require('../../../validators/user/auth.schema');
 const Controller = require('../../controller');
 
 class UserAuthController extends Controller {
-    async login(req, res, next){
+    async getOtp(req, res, next){
         try {
-            await authSchema.validateAsync(req.body);
+            await getOtpSchema.validateAsync(req.body);
             const {phone} = req.body;
             const code = randomNumberGenerator();
             const result = await this.saveUser(phone, code);
@@ -22,7 +22,26 @@ class UserAuthController extends Controller {
                 }
             });
         } catch (error) {
-            next(createError.BadRequest(error.message))
+            next(error)
+        }
+    }
+    async checkOtp(req, res, next){
+        try {
+            await checkOtpSchema.validateAsync(req.body);
+            const {phone , code} = req.body;
+            const user = await UserModel.findOne({ phone });
+            if(!user) throw createError.NotFound("کاربر یافت نشد");
+            if(user.otp.code != code) throw createError.Unauthorized("کد ارسال شده صحیح نمیباشد");
+            const now = Date.now();
+            if(user.otp.expiresIn < now) throw createError.Unauthorized("کد شما منقضی شده است");
+            const accessToken = await signAccessToken(user._id)
+            return res.json({
+                data : {
+                    accessToken
+                }
+            })
+        } catch (error) {
+            next(error)
         }
     }
     async saveUser(phone, code){
@@ -34,7 +53,7 @@ class UserAuthController extends Controller {
         if(result){
             return (await this.updateUser(phone, {otp}))
         }
-        return !! (await UserModel.create({
+        return !!(await UserModel.create({
             phone,
             otp,
             role : [USER_ROLE]
@@ -50,7 +69,7 @@ class UserAuthController extends Controller {
             if(["", " ", "0", 0, null, undefined, NaN]) delete objectData[key];
         })
         const updateResult = await UserModel.updateOne({phone}, {$set : objectData});
-        return !! updateResult.modifiedCount
+        return !!updateResult.modifiedCount
     }
 }
 

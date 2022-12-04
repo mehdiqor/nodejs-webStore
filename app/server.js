@@ -6,6 +6,7 @@ const http = require('http');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const createError = require('http-errors');
+const cors = require('cors');
 const { Allroutes } = require('./router/router');
 
 module.exports = class Application {
@@ -22,6 +23,7 @@ module.exports = class Application {
         this.errorHandling();
     }
     configApplication(){
+        this.#app.use(cors())
         this.#app.use(morgan('dev'))
         this.#app.use(express.json()); //json for sending data from client
         this.#app.use(express.urlencoded({extended : true})); //urlencoded for sending data with form
