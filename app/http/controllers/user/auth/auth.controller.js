@@ -1,7 +1,7 @@
 const createError = require('http-errors');
 const { UserModel } = require('../../../../models/users');
 const { EXPIRES_IN, USER_ROLE } = require('../../../../utils/costans');
-const { randomNumberGenerator, signAccessToken } = require('../../../../utils/fuctions');
+const { randomNumberGenerator, signAccessToken, verifyRefreshToken, signRefreshToken } = require('../../../../utils/fuctions');
 const { getOtpSchema, checkOtpSchema } = require('../../../validators/user/auth.schema');
 const Controller = require('../../controller');
 
@@ -33,11 +33,13 @@ class UserAuthController extends Controller {
             if(!user) throw createError.NotFound("کاربر یافت نشد");
             if(user.otp.code != code) throw createError.Unauthorized("کد ارسال شده صحیح نمیباشد");
             const now = Date.now();
-            if(user.otp.expiresIn < now) throw createError.Unauthorized("کد شما منقضی شده است");
-            const accessToken = await signAccessToken(user._id)
+            if(+user.otp.expiresIn < now) throw createError.Unauthorized("کد شما منقضی شده است");
+            const accessToken = await signAccessToken(user._id);
+            const refreshToken = await signRefreshToken(user._id);
             return res.json({
                 data : {
-                    accessToken
+                    accessToken,
+                    refreshToken
                 }
             })
         } catch (error) {
@@ -70,6 +72,23 @@ class UserAuthController extends Controller {
         })
         const updateResult = await UserModel.updateOne({phone}, {$set : objectData});
         return !!updateResult.modifiedCount
+    }
+    async refreshToken(req, res, next){
+        try {
+            const {refreshToken} = req.body;
+            const phone = await verifyRefreshToken(refreshToken);
+            const user = await UserModel.findOne({phone});
+            const accessToken = await signAccessToken(user._id);
+            const newRefreshToken = await signRefreshToken(user._id);
+            return res.json({
+                data : {
+                    accessToken,
+                    refreshToken : newRefreshToken
+                }
+            })
+        } catch (error) {
+            next(error)
+        }
     }
 }
 
