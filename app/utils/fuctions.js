@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const createError = require('http-errors');
 const { UserModel } = require('../models/users');
 const { ACCESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_SECRET_KEY } = require('./costans');
+const redisClient = require('./init_redis')
 
 function OTPmaker(length) {
     var result           = '';
@@ -22,7 +23,7 @@ function signAccessToken(userId){
             phone : user.phone
         };
         const options = {
-            expiresIn : "1y"
+            expiresIn : "1h"
         };
         jwt.sign(payload, ACCESS_TOKEN_SECRET_KEY, options, (err, token) => {
             if(err) reject(createError.InternalServerError("خطای سرور!"));
@@ -39,8 +40,9 @@ function signRefreshToken(userId){
         const options = {
             expiresIn : "1y"
         };
-        jwt.sign(payload, REFRESH_TOKEN_SECRET_KEY, options, (err, token) => {
+        jwt.sign(payload, REFRESH_TOKEN_SECRET_KEY, options, async (err, token) => {
             if(err) reject(createError.InternalServerError("خطای سرور!"));
+            await redisClient.SETEX(userId, (365*24*60*60), token);
             resolve(token)
         })
     })
@@ -49,10 +51,13 @@ function verifyRefreshToken(token){
     return new Promise((resolve, reject) => {
         jwt.verify(token, REFRESH_TOKEN_SECRET_KEY, async (err, payload) => {
             if(err) reject(createError.Unauthorized('وارد حساب کاربری خود شوید'));
-            const {phone} = payload;
+            const {phone} = payload || {};
             const user = await UserModel.findOne({phone}, {password : 0, otp : 0});
             if(!user) reject(createError.Unauthorized('حساب کاربری یافت نشد'));
-            resolve(phone)
+            const refreshToken = redisClient.get(user._id);
+            console.log(refreshToken);
+            if(token === refreshToken) return resolve(phone);
+            reject(createError.Unauthorized('ورود مجدد به حساب کاربری انجام نشد'));
         })
     })
 }

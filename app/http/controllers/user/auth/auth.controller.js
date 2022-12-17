@@ -49,7 +49,7 @@ class UserAuthController extends Controller {
     async saveUser(phone, code){
         let otp = {
             code,
-            expiresIn : EXPIRES_IN
+            expiresIn : (new Date().getTime() + 120000)
         }
         const result = await this.checkExistUser(phone);
         if(result){

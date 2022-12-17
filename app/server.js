@@ -17,6 +17,7 @@ module.exports = class Application {
         this.#PORT = PORT;
         this.#DB_URI = DB_URI;
         this.configApplication();
+        this.initRedis();
         this.connectToMongoDB();
         this.createServer();
         this.createRoutes();
@@ -53,6 +54,9 @@ module.exports = class Application {
         http.createServer(this.#app).listen(this.#PORT, () => {
             console.log('run > http://localhost:' + this.#PORT);
         })
+    }
+    initRedis(){
+        require('./utils/init_redis')
     }
     connectToMongoDB(){
         mongoose.connect(this.#DB_URI, (error) => {
