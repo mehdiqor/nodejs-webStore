@@ -20,7 +20,7 @@ const router = require('express').Router();
  *              201:
  *                  description: success
  */
-router.post("/add", CategoryController.addCategory)
+router.post("/add", CategoryController.addCategory);
 
 module.exports = {
     CategoryRoutes : router
