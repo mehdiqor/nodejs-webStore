@@ -84,7 +84,7 @@ router.post('/check-otp', UserAuthController.checkOtp);
 router.post('/refreshToken', UserAuthController.refreshToken);
 
 module.exports = {
-    userAuthRoutes : router
+    UserAuthRoutes : router
 }
 
 // "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTk1NDEzNTEwIiwiaWF0IjoxNjcwMzMzMjU0LCJleHAiOjE3MDE4OTA4NTR9.bAcLptUtATzv9hQV2okfnpxC4afBXm3OsjOmkGeMgss"

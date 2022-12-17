@@ -4,15 +4,6 @@ const { UserModel } = require('../models/users');
 const { ACCESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_SECRET_KEY } = require('./costans');
 const redisClient = require('./init_redis')
 
-function OTPmaker(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
 function randomNumberGenerator(){
     return Math.floor((Math.random() * 90000) + 10000)
 }
@@ -64,7 +55,6 @@ function verifyRefreshToken(token){
 
 module.exports = {
     randomNumberGenerator,
-    OTPmaker,
     signAccessToken,
     signRefreshToken,
     verifyRefreshToken
