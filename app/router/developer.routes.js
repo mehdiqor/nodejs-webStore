@@ -5,8 +5,8 @@ const { randomNumberGenerator } = require('../utils/fuctions');
 /**
  * @swagger
  *  tags:
- *      name : Developer-Routes
- *      description: developer utils
+ *      -   name: Developer-Routes
+ *          description: developer utils
  */
 
 /**
