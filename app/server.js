@@ -8,6 +8,7 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const createError = require('http-errors');
 const cors = require('cors');
 const { Allroutes } = require('./router/router');
+const { error } = require('console');
 
 module.exports = class Application {
     #app = express()
@@ -17,7 +18,7 @@ module.exports = class Application {
         this.#PORT = PORT;
         this.#DB_URI = DB_URI;
         this.configApplication();
-        this.initRedis();
+        // this.initRedis();
         this.connectToMongoDB();
         this.createServer();
         this.createRoutes();
@@ -51,13 +52,14 @@ module.exports = class Application {
         })))
     }
     createServer(){
-        http.createServer(this.#app).listen(this.#PORT, () => {
+        http.createServer(this.#app).listen(this.#PORT, (error) => {
+            if(error) console.log(error);
             console.log('run > http://localhost:' + this.#PORT);
         })
     }
-    initRedis(){
-        require('./utils/init_redis')
-    }
+    // initRedis(){
+    //     require('./utils/init_redis')
+    // }
     connectToMongoDB(){
         mongoose.connect(this.#DB_URI, (error) => {
             if(!error) return console.log("connected to MongoDB...");

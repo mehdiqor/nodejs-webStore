@@ -67,7 +67,7 @@ router.post('/check-otp', UserAuthController.checkOtp);
  *          summary: send refresh token for get new token and refresh token
  *          description: fresh token
  *          parameters:
- *              -   in: body
+ *              -   in: formData
  *                  required: true
  *                  type: stirng
  *                  name: refreshToken
@@ -86,5 +86,3 @@ router.post('/refreshToken', UserAuthController.refreshToken);
 module.exports = {
     UserAuthRoutes : router
 }
-
-// "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZSI6IjA5MTk1NDEzNTEwIiwiaWF0IjoxNjcwMzMzMjU0LCJleHAiOjE3MDE4OTA4NTR9.bAcLptUtATzv9hQV2okfnpxC4afBXm3OsjOmkGeMgss"

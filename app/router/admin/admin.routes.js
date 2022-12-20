@@ -1,3 +1,4 @@
+const { BlogAdminApiRoutes } = require('./blog');
 const { CategoryRoutes } = require('./category');
 const router = require('express').Router();
 
@@ -9,10 +10,13 @@ const router = require('express').Router();
  *      -   name: Create-Update-Remove
  *          description: CRUD
  *      -   name: GET-methods
- *      -   description: list of categories
+ *          description: list of categories
+ *      -   name: Blog
+ *          description: blog managment panel
  */
 
 router.use("/category", CategoryRoutes)
+router.use("/blogs", BlogAdminApiRoutes)
 
 module.exports = {
     AdminRoutes : router
