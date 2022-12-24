@@ -2,7 +2,9 @@ const jwt = require('jsonwebtoken');
 const createError = require('http-errors');
 const { UserModel } = require('../models/users');
 const { ACCESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_SECRET_KEY } = require('./costans');
-const redisClient = require('./init_redis')
+const redisClient = require('./init_redis');
+const fs = require('fs');
+const path = require("path");
 
 function randomNumberGenerator(){
     return Math.floor((Math.random() * 90000) + 10000)
@@ -14,7 +16,7 @@ function signAccessToken(userId){
             phone : user.phone
         };
         const options = {
-            expiresIn : "1h"
+            expiresIn : "24h"
         };
         jwt.sign(payload, ACCESS_TOKEN_SECRET_KEY, options, (err, token) => {
             if(err) reject(createError.InternalServerError("خطای سرور!"));
@@ -41,7 +43,7 @@ function signRefreshToken(userId){
 function verifyRefreshToken(token){
     return new Promise((resolve, reject) => {
         jwt.verify(token, REFRESH_TOKEN_SECRET_KEY, async (err, payload) => {
-            if(err) reject(createError.Unauthorized('وارد حساب کاربری خود شوید'));
+            if(err) reject(createError.Unauthorized('!وارد حساب کاربری خود شوید'));
             const {phone} = payload || {};
             const user = await UserModel.findOne({phone}, {password : 0, otp : 0});
             if(!user) reject(createError.Unauthorized('حساب کاربری یافت نشد'));
@@ -52,10 +54,15 @@ function verifyRefreshToken(token){
         })
     })
 }
+function deleteFileInPublic(fileAddress){
+    const pathFile = path.join(__dirname, "..", "..", "public", fileAddress)
+    fs.unlinkSync(pathFile)
+}
 
 module.exports = {
     randomNumberGenerator,
     signAccessToken,
     signRefreshToken,
-    verifyRefreshToken
+    verifyRefreshToken,
+    deleteFileInPublic
 }
