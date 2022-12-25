@@ -15,8 +15,13 @@ const Schema = new mongoose.Schema({
     discount : {type : Number, default : 0},
     birthday : {type : String},
     role : {type : [String], default : ["USER"]}
+}, {
+    timestamps : true,
+    toJSON : {
+        virtuals : true
+    }
 });
 
 module.exports = {
-    UserModel : mongoose.model('User', Schema)
+    UserModel : mongoose.model('user', Schema)
 }

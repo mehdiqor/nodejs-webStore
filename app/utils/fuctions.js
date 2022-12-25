@@ -47,7 +47,8 @@ function verifyRefreshToken(token){
             const {phone} = payload || {};
             const user = await UserModel.findOne({phone}, {password : 0, otp : 0});
             if(!user) reject(createError.Unauthorized('حساب کاربری یافت نشد'));
-            const refreshToken = redisClient.get(user._id);
+            const refreshToken = redisClient.get(user?._id || "key_default");
+            if(!refreshToken) reject(createError.Unauthorized('ورود مجدد به حساب کاربری انجام نشد'));
             console.log(refreshToken);
             if(token === refreshToken) return resolve(phone);
             reject(createError.Unauthorized('ورود مجدد به حساب کاربری انجام نشد'));
@@ -55,8 +56,10 @@ function verifyRefreshToken(token){
     })
 }
 function deleteFileInPublic(fileAddress){
-    const pathFile = path.join(__dirname, "..", "..", "public", fileAddress)
-    fs.unlinkSync(pathFile)
+    if(fileAddress){
+        const pathFile = path.join(__dirname, "..", "..", "public", fileAddress)
+        if(fs.existsSync(pathFile)) fs.unlinkSync(pathFile)
+    }
 }
 
 module.exports = {
