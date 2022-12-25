@@ -14,7 +14,7 @@ const Schema = new mongoose.Schema({
     bills : {type : [], default : []},
     discount : {type : Number, default : 0},
     birthday : {type : String},
-    role : {type : [String], default : ["USER"]}
+    roles : {type : [String], default : ["USER"]}
 }, {
     timestamps : true,
     toJSON : {
